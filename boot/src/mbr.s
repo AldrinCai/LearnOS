@@ -106,6 +106,7 @@ rd_disk_m_16:
 	mul dx
 	mov cx, ax ;控制循环次数
 	mov dx, 0x1f0
+
 .go_on_read:
 	in ax, dx
 	mov [bx], ax
