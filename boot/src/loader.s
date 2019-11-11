@@ -61,8 +61,8 @@ loader_start:
 	mov ebx, ards_buf
 	xor edx, edx ; 先进行清 0 操作 防止误判
 .find_max_mem_area:
-	mov eax, [ards_buf]
-	add eax, [ards_buf + 8]
+	mov eax, [ebx]
+	add eax, [ebx + 8]
 	add ebx, 20  ;指向下一条 ARDS 结构
 	cmp edx, eax
 	jge .next_ards
