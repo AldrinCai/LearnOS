@@ -148,6 +148,7 @@ p_mode_start:
 	sgdt [gdt_ptr]
 	mov ebx, [gdt_ptr + 2]
 	or dword [ebx + 0x18 + 4], 0xc0000000
+	add dword [gdt_ptr + 2], 0xc0000000
 	add esp, 0xc0000000
 
 	mov eax, PAGE_DIR_TABLE_POS
