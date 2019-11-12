@@ -126,7 +126,7 @@ loader_start:
 	;3 cr0 寄存器 PE 位置 1
 	mov eax, cr0
 	or eax, 0x00000001
-	mov cr0, eax
+	mov cr0, eax ;进入保护模式
 	
 	jmp dword SELECTOR_CODE:p_mode_start  ; 刷新流水线
 
@@ -135,6 +135,7 @@ loader_start:
 
 [bits 32]
 p_mode_start:
+
 	mov ax, SELECTOR_DATA
 	mov ds, ax
 	mov es, ax
@@ -143,6 +144,92 @@ p_mode_start:
 	mov ax, SELECTOR_VIDEO
 	mov gs, ax
 
-	mov byte [gs:160], 'P'
+	call setup_page
+	sgdt [gdt_ptr]
+	mov ebx, [gdt_ptr + 2]
+	or dword [ebx + 0x18 + 4], 0xc0000000
+	add esp, 0xc0000000
 
+	mov eax, PAGE_DIR_TABLE_POS
+	mov cr3, eax
+
+	mov eax, cr0
+	or eax, 0x80000000
+	mov cr0, eax
+	lgdt [gdt_ptr]
+
+	mov byte [gs:160], 'V'
 	jmp $
+
+setup_page:
+	mov ecx, 4096
+	mov esi, 0
+
+;清空页目录表占用的内存
+.clear_page_dir:
+	mov byte [PAGE_DIR_TABLE_POS + esi], 0
+	inc esi
+	loop .clear_page_dir
+
+;创建页目录项
+.create_pde:
+	mov eax, PAGE_DIR_TABLE_POS
+	add eax, 0x1000 ;eax 为第一个页表的地址
+	mov ebx, eax  ; 为创建页目录项做好准备
+
+	or eax, PG_US_U | PG_RW_W | PG_P
+	mov [PAGE_DIR_TABLE_POS + 0x0], eax ;第一个页目录项
+	mov [PAGE_DIR_TABLE_POS + 0xc00], eax ; 内核空间的第一个页目录项
+
+	; 最后一个页目录项指向页目录表自己的地址
+	sub eax, 0x1000
+	mov [PAGE_DIR_TABLE_POS + 4092], eax
+
+	;创建页表项
+	mov ecx, 256
+	mov esi, 0
+	mov edx, PG_US_U | PG_RW_W | PG_P
+
+.create_pte:
+	mov [ebx + esi * 4], edx
+
+	add edx, 4096
+	inc esi
+	loop .create_pte
+
+	;创建内核其他页目录项
+	mov eax, PAGE_DIR_TABLE_POS
+	add eax, 0x2000   ;esx 指向第二个页表位置
+	or eax, PG_US_U | PG_RW_W | PG_P
+	mov ebx, PAGE_DIR_TABLE_POS
+	mov ecx, 254
+	mov esi, 769
+.create_kernel_pde:
+	mov [ebx + esi * 4], eax
+	inc esi
+	add eax, 0x1000
+	loop .create_kernel_pde
+	ret
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
