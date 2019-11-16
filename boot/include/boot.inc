@@ -3,6 +3,11 @@
 LOADER_BASE_ADDR equ 0x900
 LOADER_START_SECTOR equ 0x2
 PAGE_DIR_TABLE_POS equ 0x100000  ; 页目录表物理地址 1M 处
+
+KERNEL_START_SECTOR equ 0x9
+KERNEL_BIN_BASE_ADDR equ 0x70000
+PT_NULL equ 0
+KERNEL_ENTRY_POINT equ 0xc0001500
 ;--------------------------------------------------- 
 
 ; gdt 描述符
