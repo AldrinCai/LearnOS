@@ -16,7 +16,7 @@ _start:
 global asm_print
 asm_print:
 	push ebp
-	mov esp, ebp
+	mov ebp, esp
 	mov eax, 4
 	mov ebx, 1
 	mov ecx, [ebp + 8]
