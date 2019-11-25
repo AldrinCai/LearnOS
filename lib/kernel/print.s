@@ -14,7 +14,7 @@ put_char:
 ;获取光标位置
 	;先获取高 8 位
 	mov dx, 0x03d4
-	mov al, 0x0e
+	mov al, 0x0e ;低 8 位光标寄存器索引
 	out dx, al
 	mov dx, 0x03d5
 	in al, dx
@@ -22,10 +22,11 @@ put_char:
 
 	; 再获取低 8 位
 	mov dx, 0x03d4
-	mov al, 0x0f
+	mov al, 0x0f ;高 8 位寄存器光标索引 
 	out dx, al
 	mov dx, 0x03d5
 	in al, dx
+
 	mov bx, ax
 
 ; 开始打印
@@ -76,7 +77,44 @@ put_char:
 .is_line_feed_end:
 	jl .set_cursor
 
+; 超出屏幕范围开始滚屏
+.roll_screen:
+	cld
+	mov ecx, 960 ; 2000 - 80 = 1920, 1920*2/4 = 960
 
+	mov esi, 0xc00b80a0 ; 第 1 行行首
+	mov edi, 0xc00b8000 ; 第 0 行行首
+	rep movsd
+
+	;最后一行填充为空白
+	mov ebx, 3840
+	mov ecx, 80
+
+.cls:
+	mov word [gs:ebx], 0x0720
+	add ebx, 2
+	loop .cls
+	mov bx, 1920
+
+.set_cursor:
+	;先设置高 8 位
+	mov dx, 0x03d4
+	mov al, 0x0e
+	out dx, al
+	mov dx, 0x03d5
+	mov al, bh
+	out dx, al
+	;设置低 8 位
+	mov dx, 0x03d4
+	mov al, 0x0f
+	out dx, al
+	mov dx, 0x03d5
+	mov al, bl
+	out dx, al
+	
+.put_char_done:
+	popad
+	ret
 
 
 
