@@ -7,7 +7,6 @@ put_int_buffer dq 0
 
 [bits 32]
 section .text
-
 global put_int
 put_int:
 	pushad
@@ -35,7 +34,7 @@ put_int:
 	loop .16based_4bits
 
 .ready_to_print:
-	inc edi
+	mov edi, 0
 .skip_prefix_0:
 	cmp edi, 8
 	je .full0
@@ -57,7 +56,7 @@ put_int:
 	mov cl, [put_int_buffer + edi]
 	cmp edi, 8
 	jl .put_each_num
-	pushad
+	popad
 	ret
 
 
