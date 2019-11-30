@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 int main(void){
     int in_a = 1, in_b = 2;
     asm("movb %b0, %1;"
