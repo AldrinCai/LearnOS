@@ -1,7 +1,8 @@
 #include <stdio.h>
+
 int main(void){
     int ret_cnt = 0, test = 0;
-    char * fmt = "hello, world\n";
+    char * fmt = "hello,world\n";
     asm(
     "pushl %1; \
     call printf; \

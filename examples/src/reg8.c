@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 int main(void){
     int ret_cnt = 0, test = 0;
     char* fmt = "hello,world\n";
