@@ -1,8 +1,13 @@
 #include "interrupt.h"
 #include "stdint.h"
 #include "global.h"
+#include "io.h"
 
 #define IDT_DESC_CNT 0x21  //支持的中断数
+#define PIC_M_CTRL 0x20  //主片的控制端口是 0x20
+#define PIC_M_DATA 0x21  // 主片的控制端口是0x20
+#define PIC_S_CTRL 0xa0  // 从片的控制端口是0xa0
+#define PIC_S_DATA 0xa1  // 从片的数据端口是 0xa1
 
 /*中断门描述符结构体*/
 struct gate_desc {
@@ -28,14 +33,38 @@ static void idt_desc_init(void){
     put_str("   idt_desc_init done\n");
 }
 
-/*完成有关中断的所有初始化工作*/
+// 初始化可编程中断控制器 8259A
+static void pic_init(void){
+    // 初始化主片
+    outb(PIC_M_CTRL, 0x11); //ICW1: 边沿触发，级联8259，需要 ICW4
+    outb(PIC_M_DATA, 0x20); // ICW2: 起始中断向量号为 0x20
+
+    outb(PIC_M_DATA, 0x04); // ICW3: IR2 接从片
+    outb(PIC_M_DATA, 0x01); // ICW4: 8086 模式，正常 EOI
+    
+    //初始化从片
+    outb(PIC_S_CTRL, 0x11); //ICW1: 边沿触发，级联 8259，需要ICW4
+    outb(PIC_S_DATA, 0x28); //ICW2: 起始中断向量号为 0x28
+
+    outb(PIC_S_DATA, 0x02); //ICW3: 设置从片连接到主片的 IR2 引脚
+    outb(PIC_S_DATA, 0x01); // ICW4:8086 模式，正常 EOI
+
+    // 打开主片上的 IR0，也就是目前只接受时钟产生的中断
+    outb(PIC_M_DATA, 0xfe);
+    outb(PIC_S_DATA, 0xff);
+
+    put_str("   pic_init done\n");
+
+}
+
+// 完成有关中断的所有初始化工作
 void idt_init(){
     put_str("idt_init start\n");
-    idt_desc_init();
-    pic_init();
+    idt_desc_init(); //初始化中断描述符表
+    pic_init();  //初始化 8259A
 
-    /*加载 idt*/
+    //加载idt
     uint64_t idt_operand = ((sizeof(idt) - 1) | ((uint64_t)((uint32_t)idt << 16)));
-    asm volatile("lidt %0": :"m"(idt_operand));
-    put_str("idt_init dont\n");
+    asm volatile ("lidt %0": :"m"(idt_operand));
+    put_str("idt_init done\n");
 }
