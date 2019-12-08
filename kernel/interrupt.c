@@ -26,7 +26,7 @@ extern intr_handler intr_entry_table[IDT_DESC_CNT]; //声明引用定义在 kern
 
 // 创建中断门描述符
 static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler function){
-    p_gdesc->func_offset_low_word = (uint32_t)function & 0xFFFF0000;
+    p_gdesc->func_offset_low_word = (uint32_t)function & 0x0000FFFF;
     p_gdesc->selector = SELECTOR_K_CODE;
     p_gdesc->dcount = 0;
     p_gdesc->attribute = attr;
@@ -74,7 +74,7 @@ void idt_init(){
     pic_init();  //初始化 8259A
 
     //加载idt
-    uint64_t idt_operand = ((sizeof(idt) - 1) | ((uint64_t)((uint32_t)idt << 16)));
+    uint64_t idt_operand = ((sizeof(idt) - 1) | ((uint64_t)(uint32_t)idt << 16));
     asm volatile ("lidt %0": :"m"(idt_operand));
     put_str("idt_init done\n");
 }
