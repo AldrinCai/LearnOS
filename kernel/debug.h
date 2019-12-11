@@ -6,9 +6,9 @@ void panic_spin(char* filename, int line, const char* func, const char* conditio
  * 代表所有与省略号相对应的参数
  * "..."表示定义的宏参数可变
  */
-#define PANIC(...) panic_spin (__FILE__, __LINE__, __func__, __VA__ARGS)
+#define PANIC(...) panic_spin (__FILE__, __LINE__, __func__, __VA_ARGS__)
 
-#ifndef NDEBUG
+#ifdef NDEBUG
     #define ASSERT(CONDITION) ((void)0)
 #else
 #define ASSERT(CONDITION) \
