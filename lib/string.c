@@ -64,3 +64,76 @@ char* strcpy(char* dst_, const char* src_){
     memcmp(dst, src, size +1);
     return dst_; 
 }
+
+/*
+ * 比较两个字符串
+ * 若 a 中的字符大于 b 中的字符返回1
+ * 若 a 中的字符小于 b 中的字符返回 -1
+ * 若想等返回0
+ */
+int8_t strcmp(const char* a, const char* b){
+    ASSERT(a != NULL && b != NULL);
+    while(a != NULL && b != NULL){
+        a++;
+        b++;
+    }
+    return *a < *b ? -1 : *a > *b;
+}
+
+/*
+ * 从左向右查找字符串 str 中首次出现字符 ch 的地址
+ */
+char* strchr(const char* str, const uint8_t ch){
+    ASSERT(str != NULL);
+    while(*str != 0){
+        if(*str == ch){
+            return (char*)str;
+        }
+        str++;
+    }
+    return NULL;
+}
+
+/*
+ * 从后往前查找字符串 str 中首次出现字符 ch 的地址
+ */
+char* strrchr(const char* str, const uint8_t ch){
+    ASSERT(str != NULL);
+    const char* last_char = NULL;
+    while(*str != 0){
+        if(*str == ch) {
+            last_char = str;
+        }
+        str++;
+    }
+    return (char*)last_char;
+}
+
+/*
+ * 将字符串str_ 拼接到 dst_ 后，返回拼接的串地址
+ */
+char* strcat(char* dst_, const char* src_){
+    ASSERT(dst_ != NULL && src_ != NULL);
+    char* str = dst_;
+    while(*str++);
+    --str;
+    while((*str++ = *src_++));
+    return dst_;
+}
+
+/*
+ * 在字符串 str 中查找字符 ch 出现的次数
+ */
+uint32_t strchrs(const char* str, uint8_t ch){
+    ASSERT(str != NULL);
+    uint32_t ch_cnt = 0;
+    const char* p = str;
+    while(*p != 0){
+        if(*p == ch){
+            ch_cnt++;
+        }
+        p++;
+    }
+    return ch_cnt;
+
+}
