@@ -33,7 +33,10 @@ static void mem_pool_init(uint32_t all_mem){
     uint32_t kp_start = used_mem;
     uint32_t up_start = kp_start + kernel_free_pages * PG_SIZE;
 
-    kernel_pool.phy_addr_start = kernel_free_pages  * PG_SIZE;
+    kernel_pool.phy_addr_start = kp_start;
+    user_pool.phy_addr_start = up_start;
+
+    kernel_pool.pool_size = kernel_free_pages * PG_SIZE;
     user_pool.pool_size = user_free_pages * PG_SIZE;
 
     kernel_pool.pool_bitmap.btmp_bytes_len = kbm_length;
@@ -44,12 +47,12 @@ static void mem_pool_init(uint32_t all_mem){
 
     put_str("   kernel_pool_bitmap_start:");
     put_int((int)kernel_pool.pool_bitmap.bits);
-    put_str(" kernel_pool_phy_addr_start:");
+    put_str("   kernel_pool_phy_addr_start:");
     put_int(kernel_pool.phy_addr_start);
     put_str("\n");
 
     put_str("user_pool_bitmap_start:");
-    put_str((int)user_pool.pool_bitmap.bits);
+    put_int((int)user_pool.pool_bitmap.bits);
     put_str(" user_pool_phy_addr_start:");
     put_int(user_pool.phy_addr_start);
     put_str("\n");
@@ -59,7 +62,7 @@ static void mem_pool_init(uint32_t all_mem){
 
     kernel_vaddr.vaddr_bitmap.btmp_bytes_len = kbm_length;
 
-    kernel_vaddr.vaddr_bitmap.bits = (*void)(MEM_BITMAP_BASE + kbm_length + ubm_length);
+    kernel_vaddr.vaddr_bitmap.bits = (void*)(MEM_BITMAP_BASE + kbm_length + ubm_length);
 
     kernel_vaddr.vaddr_start = K_HEAP_START;
     bitmap_init(&kernel_vaddr.vaddr_bitmap); 
@@ -67,7 +70,7 @@ static void mem_pool_init(uint32_t all_mem){
 
 }
 
-void mem_init(){
+void init_mem(){
     put_str("mem_init start\n");
     uint32_t mem_bytes_total = (*(uint32_t*)(0xb00));
     mem_pool_init(mem_bytes_total);
