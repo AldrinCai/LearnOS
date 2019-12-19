@@ -1,6 +1,7 @@
 #include "memory.h"
 #include "stdint.h"
 #include "print.h"
+#include "debug.h"
 
 #define PG_SIZE 4096
 
@@ -154,7 +155,7 @@ void* malloc_page(enum pool_flags pf, uint32_t pg_cnt){
 
     uint32_t vaddr = (uint32_t)vaddr_start;
     uint32_t cnt = pg_cnt;
-    struct pool* mem_pool = pf & PF_KERNEK ? &kernel_pool : &user_pool;
+    struct pool* mem_pool = pf & PF_KERNEL ? &kernel_pool : &user_pool;
     while(cnt-- > 0){
         void* page_phyaddr = palloc(mem_pool);
         if(page_phyaddr == 0){
@@ -167,7 +168,7 @@ void* malloc_page(enum pool_flags pf, uint32_t pg_cnt){
 }
 
 void* get_kernel_pages(uint32_t pg_cnt){
-    void* vaddr = malloc_page(PF_KERNEK, pg_cnt);
+    void* vaddr = malloc_page(PF_KERNEL, pg_cnt);
     if(vaddr != 0){
         memset(vaddr, 0, pg_cnt * PG_SIZE);
     }

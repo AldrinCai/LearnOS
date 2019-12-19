@@ -13,8 +13,8 @@ extern struct pool kernel_pool, user_pool;
 void init_mem(void);
 
 enum pool_flags {
-    PF_KERNEK = 1;
-    PF_USER = 2;
+    PF_KERNEL = 1,
+    PF_USER = 2
 };
 
 #define PG_P_1 1  // 页表项或页目录项存在属性位
