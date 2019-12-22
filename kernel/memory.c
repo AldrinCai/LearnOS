@@ -78,7 +78,7 @@ static void* vaddr_get(enum pool_flags pf, uint32_t pg_cnt){
     int vaddr_start = 0;
     int bit_idx_start = -1;
     uint32_t cnt = 0;
-    if(pf == PG_KERNEL){
+    if(pf == PF_KERNEL){
         bit_idx_start = bitmap_scan(&kernel_vaddr.vaddr_bitmap, pg_cnt);
         if(bit_idx_start == -1){
             return 0;
@@ -148,7 +148,7 @@ static void page_table_add(void* _vaddr, void* _page_phyaddr){
 
 void* malloc_page(enum pool_flags pf, uint32_t pg_cnt){
     ASSERT(pg_cnt > 0 && pg_cnt < 3840);
-    void* vaddr_start = vaddr_get(pg, pg_cnt);
+    void* vaddr_start = vaddr_get(pf, pg_cnt);
     if(vaddr_start == 0){
         return 0;
     }
