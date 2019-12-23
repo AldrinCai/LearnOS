@@ -45,6 +45,10 @@ $(BUILD_DIR)/memory.o: kernel/memory.c kernel/memory.h lib/stdint.h lib/kernel/b
 	lib/kernel/io.h kernel/interrupt.h lib/string.h lib/stdint.h
 	$(CC) $(CFLAGS) $< -o $@
 
+$(BUILD_DIR)/thread.o: thread/thread.c thread/thread.h lib/stdint.h \
+        kernel/global.h lib/kernel/bitmap.h kernel/memory.h lib/string.h \
+        lib/stdint.h lib/kernel/print.h kernel/interrupt.h kernel/debug.h
+	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/kernel.o: kernel/kernel.s
 	$(AS) $(ASFLAGS) $< -o $@
