@@ -24,7 +24,7 @@ struct virtual_addr kernel_vaddr;
 
 static void mem_pool_init(uint32_t all_mem){
     put_str("   mem_pool_init start\n");
-    uint32_t page_table_size = PG_SIZE * 256;
+    uint32_t page_table_size = PG_SIZE * 256; // 页目录及页表占用内存
     uint32_t used_mem = page_table_size + 0x100000; // 0x100000 为低端 1MB 内存
     uint32_t free_mem = all_mem - used_mem;
     uint16_t all_free_pages = free_mem / PG_SIZE;

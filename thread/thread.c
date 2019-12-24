@@ -16,17 +16,17 @@ static void kernel_thread(thread_func* function, void* func_arg){
 /*
  * 初始化线程栈 thread_stack
  */
-void thread_create(struct tasl_struct* pthread, thread_func function, void* func_arg){
+void thread_create(struct task_struct* pthread, thread_func function, void* func_arg){
     // 先预留中断使用的栈
     pthread->self_kstack -= sizeof(struct intr_stack);
 
     // 再留出线程栈空间
     pthread->self_kstack -= sizeof(struct thread_stack);
     struct thread_stack* kthread_stack = (struct thread_stack*)pthread->self_kstack;
-    kernel_thread->eip = kernel_thread;
-    kernel_thread->function = function;
-    kernel_thread->func_arg = func_arg;
-    kernel_thread->ebp = kthread_stack->ebx = \
+    kthread_stack->eip = kernel_thread;
+    kthread_stack->function = function;
+    kthread_stack->func_arg = func_arg;
+    kthread_stack->ebp = kthread_stack->ebx = \
                          kthread_stack->esi = kernel_thread->edi = 0;
 }
 
@@ -42,7 +42,7 @@ void init_thread(struct task_struct* pthread, char* name, int prio){
     pthread->statck_magic = 0x19870916;
 }
 
-struct tasl_struct* thread_start(char* name, int prio, thread_func function, void* func_arg){
+struct task_struct* thread_start(char* name, int prio, thread_func function, void* func_arg){
     struct task_struct* thread = get_kernel_pages(1);
     init_thread(thread, name, prio);
     thread_create(thread, function, func_arg);
