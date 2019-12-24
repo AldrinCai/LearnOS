@@ -27,7 +27,7 @@ void thread_create(struct task_struct* pthread, thread_func function, void* func
     kthread_stack->function = function;
     kthread_stack->func_arg = func_arg;
     kthread_stack->ebp = kthread_stack->ebx = \
-                         kthread_stack->esi = kernel_thread->edi = 0;
+                         kthread_stack->esi = kthread_stack->edi = 0;
 }
 
 /*
