@@ -70,7 +70,13 @@ struct task_struct {
     enum task_status status;
     uint8_t priority; // 线程优先级
     char name[16]; 
+    uint8_t ticks;
+    uint32_t elapsed_ticks;
+    struct list_elem general_tag;
+    struct list_elem all_list_tag;
+    uint32_t* pgdir;
     uint32_t statck_magic; // 栈的边界标记，检测栈溢出
+
 };
 
 void thread_create(struct task_struct* pthread, thread_func function, void* func_arg);
